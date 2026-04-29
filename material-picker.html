@@ -23,27 +23,37 @@
     </div>
   </div>
 
-  <script>
-    // Αρχικοποίηση Storyblok Bridge
-    window.storyblok.init(() => {
-      const { plugin } = window.storyblok;
-      const input = document.getElementById('iconName');
-      const preview = document.getElementById('preview');
+<script>
+  // Συνάρτηση που αρχικοποιεί το plugin
+  const initPlugin = () => {
+    const { plugin } = window.storyblok;
+    const input = document.getElementById('iconName');
+    const preview = document.getElementById('preview');
 
-      // 1. Φόρτωσε την τιμή που υπάρχει ήδη στο Storyblok
-      const currentValue = plugin.get().value || 'help';
-      input.value = currentValue;
-      preview.innerText = currentValue;
+    // 1. Φόρτωσε την τρέχουσα τιμή
+    const currentValue = plugin.get().value || 'help';
+    input.value = currentValue;
+    preview.innerText = currentValue;
 
-      // 2. Όταν αλλάζει το κείμενο, ενημέρωσε το Preview και το Storyblok
-      input.addEventListener('input', (e) => {
-        const val = e.target.value.trim().toLowerCase();
-        preview.innerText = val || 'help';
-        
-        // Αποθήκευση στο Storyblok
-        plugin.set({ value: val });
-      });
+    // 2. Event listener για αλλαγές
+    input.addEventListener('input', (e) => {
+      const val = e.target.value.trim().toLowerCase();
+      preview.innerText = val || 'help';
+      plugin.set({ value: val });
     });
-  </script>
+  };
+
+  // ΠΕΡΙΜΕΝΟΥΜΕ να φορτώσει το Storyblok Bridge
+  const checkStoryblok = () => {
+    if (window.storyblok && typeof window.storyblok.init === 'function') {
+      window.storyblok.init(() => initPlugin());
+    } else {
+      // Αν δεν είναι έτοιμο, ξαναδοκίμασε σε 100ms
+      setTimeout(checkStoryblok, 100);
+    }
+  };
+
+  checkStoryblok();
+</script>
 </body>
 </html>
